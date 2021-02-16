@@ -1,0 +1,16 @@
+---
+
+version: '3'
+
+services:
+  acme_certs_extract:
+    build:          docker
+    container_name: acme_certs_extract
+    restart:        always
+    network_mode:   bridge
+    volumes:
+      - "./.env:${WORKDIR}/.env"
+      - "./certs:${CERTSDIR}"
+      - "./acme_example.json:${ACMEDIR}/acme.json"
+
+...
