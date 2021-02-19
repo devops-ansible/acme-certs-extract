@@ -260,7 +260,7 @@ def store_cert ( cert ):
 
         r_print( 'Certificate extracted for "' + cert['name'] + ('" and SANs "' + '", "'.join( cert['sans'] ) + '"'  if len( cert['sans'] ) > 0 else '') )
     else:
-        e_print( 'Skipped ' + cert['name'] )
+        e_print( 'Skipped "' + cert['name'] + '" since there was no change on fullchain.' )
 
 ###
 ## define the Watchdog handler, that triggers the actions with the ACME file

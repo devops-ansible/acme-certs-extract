@@ -13,4 +13,4 @@ WORKDIR ${WORKDIR}
 RUN chmod a+x /install/install.sh && \
     /install/install.sh
 
-CMD [ "sleep", "infinity" ]
+CMD [ "./extract.py" ]
