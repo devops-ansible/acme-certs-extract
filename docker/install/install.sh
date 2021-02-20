@@ -16,3 +16,9 @@ apt-get autoremove
 apt-get autoclean
 apt-get clean
 rm -rf /var/lib/apt/lists/* /install
+
+cat <<EOF > /usr/local/bin/entrypoint
+#!/usr/bin/env bash
+${WORKDIR}/extract.py 1>/proc/1/fd/1 2>/proc/1/fd/2
+EOF
+chmod a+x /usr/local/bin/entrypoint

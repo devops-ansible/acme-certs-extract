@@ -12,7 +12,6 @@ import time
 
 from base64             import b64decode
 from datetime           import datetime, timedelta
-from dateutil           import relativedelta
 from distutils.util     import strtobool
 from dotenv             import load_dotenv
 from pathlib            import Path
