@@ -22,11 +22,30 @@ The basic configuration can be used without special configuration. These are the
 | `ACMEDIR`    | `/acme`       | Directory where the script is searching for the `ACMEFILE`, so don't forget to bind / mount something here – may be changed |
 | `CERTSDIR`   | `/certs`      | Directory where the script will store the decoded certificate files, so don't forget to bind / mount something here – may be changed. |
 | `CERTSPLIT`  | `-----BEGIN CERTIFICATE-----`| **Do not change** |
+| `COLOR_ERROR` | `1;31`    | ANSI Color settings for error messages |
+| `COLOR_INFO` | `0`        | ANSI Color settings for information messages |
+| `COLOR_SUCCESS` | `0;32`  | ANSI Color settings for success messages |
+| `COLOR_WARN` | `0;33`     | ANSI Color settings for warning messages |
 | `CRT_ARCHIVE` | `True`       | Switch for deactivating or activating the certificate archive |
 | `DEBUG`      | `False`       | Switch on debug mode – that will print (error) messages and not stay quiet |
 | `REPLACE_ASTERISK` | `STAR`  | The asterisk `*` should not be part of filenames – so we'll replace it by this string.<br/>*Although the URL is converted to lowercase, this string is used without further modification.* |
 | `STORE_FLAT_CRTS` | `True`   | Switch for deactivating or activating the storage of flat certificates |
 | `WORKDIR`    | `/certs_extract` | **Do not change** unless you build the container from scratch ... |
+
+
+### ANSI Colors
+
+The color settings above use only the numeric values – the control characters (`\u001b` in the beginning and `m` at the end) are added by the script.
+
+A color string consists out of one to three (or even more) entities:
+
+* the style entity, e.g. `0` for the default or `1` for bold style
+* the foreground color, starting with a `3` – e.g. `31` for the color red
+* the background color, starting with a `4` – e.g. `43` for the color yellow
+
+With the default colors, we only change at most the foreground colors and styles, so our defaults consist out of one or two entities.
+
+For more information on ANSI Color codes please head over to [Haoyi's Programming Blog](https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html).
 
 
 ## The Certs directory structure

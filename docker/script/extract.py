@@ -42,16 +42,20 @@ def current_dt ( dt_format='%Y-%m-%d %H:%M.%S' ):
     return now.strftime( dt_format )
 
 # Error print when in debug mode
-def e_print ( msg ):
+def e_print ( msg, colorcode=None ):
+    if colorcode == None:
+        colorcode = COLOR.error
     global debug
     if debug:
-        sys.stderr.write( current_dt() + ': ' + msg + "\n" )
+        sys.stderr.write( colorcode + current_dt() + ': ' + msg + COLOR.reset + "\n" )
 
 # Regular print when in debug mode
-def r_print ( msg ):
+def r_print ( msg, colorcode=None ):
+    if colorcode == None:
+        colorcode = COLOR.info
     global debug
     if debug:
-        print( current_dt() + ': ' + msg )
+        sys.stderr.write( colorcode + current_dt() + ': ' + msg + COLOR.reset + "\n" )
 
 # convert string to boolean
 def bool_val ( str_val ):
@@ -98,6 +102,13 @@ archive   = bool_val( os.getenv( "CRT_ARCHIVE", "True" ) )
 
 acme_path = os.path.join( acme_dir, acme_file )
 
+class COLOR():
+    error   = '\u001b[' + os.getenv( 'COLOR_ERROR',   "1;31" ) + 'm'
+    info    = '\u001b[' + os.getenv( 'COLOR_INFO',    "0" ) + 'm'
+    success = '\u001b[' + os.getenv( 'COLOR_SUCCESS', "0;32" ) + 'm'
+    warn    = '\u001b[' + os.getenv( 'COLOR_WARN',    "0;33" ) + 'm'
+    reset   = '\u001b[0m'
+
 ###
 ## define function to handle the ACME file
 ###
@@ -126,7 +137,7 @@ def handle_acme ( acme_path ):
             else:
                 e_print( 'There is a challenge within the ACME file that cannot be handled: ' + key )
 
-    r_print( 'The ACME file "' + acme_path + '" contains ' + str( len( acme_certs ) ) + ' certificate(s), challenged by ACME version ' + str( acme_version ) )
+    r_print( 'The ACME file "' + acme_path + '" contains ' + str( len( acme_certs ) ) + ' certificate(s), challenged by ACME version ' + str( acme_version ), COLOR.warn )
 
     # for better key handling, we'll convert all dictionary keys to lower case
     acme_certs = dict_keys_to_lower( acme_certs )
@@ -263,9 +274,9 @@ def store_cert ( cert ):
                 with open( file_path , 'w' ) as f:
                     f.write( cert[ c_key ] )
 
-        r_print( 'Certificate extracted for "' + cert['name'] + ('" and SANs "' + '", "'.join( cert['sans'] ) + '"'  if len( cert['sans'] ) > 0 else '') )
+        r_print( 'Certificate extracted for "' + cert['name'] + ('" and SANs "' + '", "'.join( cert['sans'] ) + '"'  if len( cert['sans'] ) > 0 else ''), COLOR.success )
     else:
-        e_print( 'Skipped "' + cert['name'] + '" since there was no change on fullchain.' )
+        e_print( 'Skipped "' + cert['name'] + '" since there was no change on fullchain.', COLOR.warn )
 
 ###
 ## define the Watchdog handler, that triggers the actions with the ACME file
@@ -328,5 +339,6 @@ try:
     while True:
         time.sleep( 1 )
 except KeyboardInterrupt:
+    e_print( 'Termination signal received; stopping process', COLOR.warn )
     observer.stop()
 observer.join()
