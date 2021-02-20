@@ -55,7 +55,7 @@ def r_print ( msg, colorcode=None ):
         colorcode = COLOR.info
     global debug
     if debug:
-        print( colorcode + current_dt() + ': ' + msg + COLOR.reset + "\n" )
+        sys.stderr.write( colorcode + current_dt() + ': ' + msg + COLOR.reset + "\n" )
 
 # convert string to boolean
 def bool_val ( str_val ):
