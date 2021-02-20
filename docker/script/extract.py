@@ -76,17 +76,21 @@ def dict_keys_to_lower ( cur_object ):
         sys.exit(4)
     return result
 
+def prepare_url ( url ):
+    return url.lower().replace( '*', asterisk )
+
 ###
 ## fetch variables from ENV
 ###
 
 load_dotenv()
 
-acme_file = os.getenv( "ACMEFILE",  "acme.json" )
-acme_dir  = os.getenv( "ACMEDIR",   "/acme" )
-certs_dir = os.getenv( "CERTSDIR",  "/certs" )
-work_dir  = os.getenv( "WORKDIR",   "/certs_extract" )
-crt_split = os.getenv( "CERTSPLIT", "-----BEGIN CERTIFICATE-----" )
+acme_file = os.getenv( "ACMEFILE",         "acme.json" )
+acme_dir  = os.getenv( "ACMEDIR",          "/acme" )
+asterisk  = os.getenv( "REPLACE_ASTERISK", "STAR" )
+certs_dir = os.getenv( "CERTSDIR",         "/certs" )
+work_dir  = os.getenv( "WORKDIR",          "/certs_extract" )
+crt_split = os.getenv( "CERTSPLIT",        "-----BEGIN CERTIFICATE-----" )
 
 debug     = bool_val( os.getenv( "DEBUG", "False" ) )
 flat_crts = bool_val( os.getenv( "STORE_FLAT_CRTS", "True" ) )
@@ -180,7 +184,7 @@ def store_cert ( cert ):
 
     # main certificate
     certfiles = {
-        os.path.join( 'certs', cert['name'] ): {
+        os.path.join( 'certs', prepare_url( cert['name'] ) ): {
             'privkey.pem':   'pkey',
             'cert.pem':      'crt',
             'chain.pem':     'chain',
@@ -191,7 +195,7 @@ def store_cert ( cert ):
     # look for SANs
     if len( cert['sans'] ) > 0:
         for name in cert['sans']:
-            certfiles[ os.path.join( 'certs', name ) ] = {
+            certfiles[ os.path.join( 'certs', prepare_url( name ) ) ] = {
                 'privkey.pem':   'pkey',
                 'cert.pem':      'crt',
                 'chain.pem':     'chain',
@@ -204,6 +208,7 @@ def store_cert ( cert ):
     # define flat certificates
     if flat_crts:
         for cn in certnames:
+            cn = prepare_url( cn )
             try:
                 certfiles['flat']
             except:
@@ -216,6 +221,7 @@ def store_cert ( cert ):
     # define archive contents
     if archive:
         for cn in certnames:
+            cn  = prepare_url( cn )
             cnp = os.path.join( 'archive', cn, cdate )
             try:
                 certfiles[ cnp ]
