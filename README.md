@@ -33,6 +33,7 @@ The basic configuration can be used without special configuration. These are the
 | `DEBUG`      | `False`       | Switch on debug mode – that will print (error) messages and not stay quiet |
 | `REPLACE_ASTERISK` | `STAR`  | The asterisk `*` should not be part of filenames – so we'll replace it by this string.<br/>*Although the URL is converted to lowercase, this string is used without further modification.* |
 | `STORE_FLAT_CRTS` | `True`   | Switch for deactivating or activating the storage of flat certificates. Flat intends all certificates to be in one folder `flat`, not separated by directories by domain. |
+| `LIMIT_FQDN` | –             | If you want to limit the FQDNs to be watched, you can pass a comma separated list of them here; e. g. `foo.example.com,bar.example.com` |
 | `WORKDIR`    | `/certs_extract` | **Do not change** unless you build the container from scratch ... |
 
 

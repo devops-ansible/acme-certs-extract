@@ -96,6 +96,8 @@ certs_dir = os.getenv( "CERTSDIR",         "/certs" )
 work_dir  = os.getenv( "WORKDIR",          "/certs_extract" )
 crt_split = os.getenv( "CERTSPLIT",        "-----BEGIN CERTIFICATE-----" )
 
+limitfqdn = list( filter( None, [ s.strip() for s in os.getenv( "LIMIT_FQDN", ""  ).split( ',' ) ] ))
+
 debug     = bool_val( os.getenv( "DEBUG", "False" ) )
 flat_crts = bool_val( os.getenv( "STORE_FLAT_CRTS", "True" ) )
 archive   = bool_val( os.getenv( "CRT_ARCHIVE", "True" ) )
@@ -245,38 +247,43 @@ def store_cert ( cert ):
 
     # check if writeout should take place
     run_writeout   = True
-    path_for_check = os.path.join( certs_dir, 'certs', cert['name'], 'fullchain.pem' )
 
-    if os.path.isfile( path_for_check ):
-
-        with open( path_for_check ) as full_open:
-            full_file = full_open.read()
-
-        if full_file == cert['full']:
-            run_writeout = False
-
-    if run_writeout:
-        for parent, sub in certfiles.items():
-            for file, c_key in sub.items():
-
-                file_path = os.path.join( certs_dir, parent, file )
-
-                # ensure parent folder exists
-                try:
-                    directory_path = Path( file_path ).parent
-                    os.makedirs( directory_path )
-                except OSError as e:
-                    if e.errno != errno.EEXIST:
-                        e_print( 'Error creating directory "' + directory_path + '"' )
-                        sys.exit( 5 )
-
-                # write out content
-                with open( file_path , 'w' ) as f:
-                    f.write( cert[ c_key ] )
-
-        r_print( 'Certificate extracted for "' + cert['name'] + ('" and SANs "' + '", "'.join( cert['sans'] ) + '"'  if len( cert['sans'] ) > 0 else ''), COLOR.success )
+    # check if FQDN should be handled
+    if ( len( limitfqdn ) > 0 ) and ( cert['name'] not in limitfqdn ):
+        e_print( 'Skipped "' + cert['name'] + '" since it should be ignored.', COLOR.warn )
     else:
-        e_print( 'Skipped "' + cert['name'] + '" since there was no change on fullchain.', COLOR.warn )
+        path_for_check = os.path.join( certs_dir, 'certs', cert['name'], 'fullchain.pem' )
+
+        if os.path.isfile( path_for_check ):
+
+            with open( path_for_check ) as full_open:
+                full_file = full_open.read()
+
+            if full_file == cert['full']:
+                run_writeout = False
+
+        if run_writeout:
+            for parent, sub in certfiles.items():
+                for file, c_key in sub.items():
+
+                    file_path = os.path.join( certs_dir, parent, file )
+
+                    # ensure parent folder exists
+                    try:
+                        directory_path = Path( file_path ).parent
+                        os.makedirs( directory_path )
+                    except OSError as e:
+                        if e.errno != errno.EEXIST:
+                            e_print( 'Error creating directory "' + directory_path + '"' )
+                            sys.exit( 5 )
+
+                    # write out content
+                    with open( file_path , 'w' ) as f:
+                        f.write( cert[ c_key ] )
+
+            r_print( 'Certificate extracted for "' + cert['name'] + ('" and SANs "' + '", "'.join( cert['sans'] ) + '"'  if len( cert['sans'] ) > 0 else ''), COLOR.success )
+        else:
+            e_print( 'Skipped "' + cert['name'] + '" since there was no change on fullchain.', COLOR.warn )
 
 ###
 ## define the Watchdog handler, that triggers the actions with the ACME file
