@@ -9,6 +9,7 @@ import json
 import os
 import sys
 import time
+import subprocess
 
 from base64             import b64decode
 from datetime           import datetime, timedelta
@@ -95,6 +96,7 @@ asterisk  = os.getenv( "REPLACE_ASTERISK", "STAR" )
 certs_dir = os.getenv( "CERTSDIR",         "/certs" )
 work_dir  = os.getenv( "WORKDIR",          "/certs_extract" )
 crt_split = os.getenv( "CERTSPLIT",        "-----BEGIN CERTIFICATE-----" )
+runscript = os.getenv( "RUN_SCRIPT" )
 
 limitfqdn = list( filter( None, [ s.strip() for s in os.getenv( "LIMIT_FQDN", ""  ).split( ',' ) ] ))
 
@@ -103,6 +105,12 @@ flat_crts = bool_val( os.getenv( "STORE_FLAT_CRTS", "True" ) )
 archive   = bool_val( os.getenv( "CRT_ARCHIVE", "True" ) )
 
 acme_path = os.path.join( acme_dir, acme_file )
+
+###
+## define working variables
+###
+
+certfiles_changed = False
 
 class COLOR():
     error   = '\u001b[' + os.getenv( 'COLOR_ERROR',   "1;31" ) + 'm'
@@ -145,6 +153,21 @@ def handle_acme ( acme_path ):
     acme_certs = dict_keys_to_lower( acme_certs )
     for cert in acme_certs:
         handle_cert( cert, acme_version )
+
+    run_extras()
+
+###
+## function that runs the extra script if something changed
+###
+def run_extras ():
+    global certfiles_changed
+    if ( runscript is not None ) and certfiles_changed:
+        script_path = os.path.join( work_dir, runscript )
+        # ensure script is executable
+        subprocess.call( [ 'chmod', 'a+x', script_path ] )
+        subprocess.call( [ script_path ] )
+        # run script
+        certfiles_changed = False
 
 ###
 ## function for certificate extraction
@@ -190,6 +213,8 @@ def handle_cert ( cert, acme_version ):
 ###
 
 def store_cert ( cert ):
+
+    global certfiles_changed
 
     cdate = current_dt( '%Y%m%d%H%M%S' )
 
@@ -282,6 +307,7 @@ def store_cert ( cert ):
                         f.write( cert[ c_key ] )
 
             r_print( 'Certificate extracted for "' + cert['name'] + ('" and SANs "' + '", "'.join( cert['sans'] ) + '"'  if len( cert['sans'] ) > 0 else ''), COLOR.success )
+            certfiles_changed = True
         else:
             e_print( 'Skipped "' + cert['name'] + '" since there was no change on fullchain.', COLOR.warn )
 

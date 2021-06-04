@@ -34,6 +34,7 @@ The basic configuration can be used without special configuration. These are the
 | `REPLACE_ASTERISK` | `STAR`  | The asterisk `*` should not be part of filenames – so we'll replace it by this string.<br/>*Although the URL is converted to lowercase, this string is used without further modification.* |
 | `STORE_FLAT_CRTS` | `True`   | Switch for deactivating or activating the storage of flat certificates. Flat intends all certificates to be in one folder `flat`, not separated by directories by domain. |
 | `LIMIT_FQDN` | –             | If you want to limit the FQDNs to be watched, you can pass a comma separated list of them here; e. g. `foo.example.com,bar.example.com` |
+| `RUN_SCRIPT` | –             | Mount a bash script – e. g. `check.sh` – into the directory `${WORKDIR}` and set its name as value of `RUN_SCRIPT` (no leading `/`, has to be mounted directly into `${WORKDIR}`) – then every time, the certificates were changed, this script will be executed. Useful if you want to restart some Docker containers after certificates changed (You have to mount the Docker sock, etc ...) |
 | `WORKDIR`    | `/certs_extract` | **Do not change** unless you build the container from scratch ... |
 
 
