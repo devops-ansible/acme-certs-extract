@@ -17,6 +17,8 @@ This development repository does also provide a `docker-compose.yml` file to sta
 
 The basic configuration can be used without special configuration. These are the variables to change default config:
 
+*Boolean values within the variables must be noted in Python style, so `True` or `False`!*
+
 | ENV Variable | Default Value | Description |
 | ------------ | ------------- | ----------- |
 | `ACMEFILE`   | `acme.json`   | Filename of the acme file to be analyzed – may be adjusted to your needs |
@@ -30,7 +32,7 @@ The basic configuration can be used without special configuration. These are the
 | `CRT_ARCHIVE` | `True`       | Switch for deactivating or activating the certificate archive |
 | `DEBUG`      | `False`       | Switch on debug mode – that will print (error) messages and not stay quiet |
 | `REPLACE_ASTERISK` | `STAR`  | The asterisk `*` should not be part of filenames – so we'll replace it by this string.<br/>*Although the URL is converted to lowercase, this string is used without further modification.* |
-| `STORE_FLAT_CRTS` | `True`   | Switch for deactivating or activating the storage of flat certificates |
+| `STORE_FLAT_CRTS` | `True`   | Switch for deactivating or activating the storage of flat certificates. Flat intends all certificates to be in one folder `flat`, not separated by directories by domain. |
 | `WORKDIR`    | `/certs_extract` | **Do not change** unless you build the container from scratch ... |
 
 
