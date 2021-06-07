@@ -98,7 +98,8 @@ work_dir  = os.getenv( "WORKDIR",          "/certs_extract" )
 crt_split = os.getenv( "CERTSPLIT",        "-----BEGIN CERTIFICATE-----" )
 runscript = os.getenv( "RUN_SCRIPT" )
 
-limitfqdn = list( filter( None, [ s.strip() for s in os.getenv( "LIMIT_FQDN", ""  ).split( ',' ) ] ))
+limitfqdn   = list( filter( None, [ s.strip() for s in os.getenv( "LIMIT_FQDN",   ""  ).split( ',' ) ] ))
+excludefqdn = list( filter( None, [ s.strip() for s in os.getenv( "EXCLUDE_FQDN", ""  ).split( ',' ) ] ))
 
 debug     = bool_val( os.getenv( "DEBUG", "False" ) )
 flat_crts = bool_val( os.getenv( "STORE_FLAT_CRTS", "True" ) )
@@ -275,6 +276,8 @@ def store_cert ( cert ):
 
     # check if FQDN should be handled
     if ( len( limitfqdn ) > 0 ) and ( cert['name'] not in limitfqdn ):
+        e_print( 'Skipped "' + cert['name'] + '" since it is not listed to be handled.', COLOR.warn )
+    elif ( len( excludefqdn ) > 0 ) and ( cert['name'] in excludefqdn ):
         e_print( 'Skipped "' + cert['name'] + '" since it should be ignored.', COLOR.warn )
     else:
         path_for_check = os.path.join( certs_dir, 'certs', cert['name'], 'fullchain.pem' )
