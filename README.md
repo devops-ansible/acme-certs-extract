@@ -7,7 +7,7 @@ This tool is meant to export the certificates fetched by ACME for example throug
 
 ## Running the tool
 
-The tool is written in `Python` and `Docker` – and can be used by running `docker run devopsansiblede/acme-cert-extract -v $(pwd)/acme:/acme -v $(pwd)/certs:/certs`.
+The tool is written in `Python` and `Docker` – and can be used by running `docker run -v $(pwd)/acme:/acme -v $(pwd)/certs:/certs devopsansiblede/acme_certs_extract`.
 
 This development repository does also provide a `docker-compose.yml` file to start the tool localy with the latest changes through `docker-compose up -d`.  
 *Be aware that the `acme_example.json` present within this repository contains a nonsense example, that will brick every regular usage of it within a real certificate usecase. It is only meant to exist for testing purposes within this tool.*
