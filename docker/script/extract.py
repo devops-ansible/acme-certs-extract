@@ -13,7 +13,6 @@ import subprocess
 
 from base64             import b64decode
 from datetime           import datetime, timedelta
-from distutils.util     import strtobool
 from dotenv             import load_dotenv
 from pathlib            import Path
 from watchdog.events    import FileSystemEventHandler
@@ -60,7 +59,7 @@ def r_print ( msg, colorcode=None ):
 
 # convert string to boolean
 def bool_val ( str_val ):
-    return bool( strtobool( str_val ) )
+    return str_val.lower() in [ 'true', 't', 'yes', 'y', '1', 1 ]
 
 # ensure keys to be lowercase
 def dict_keys_to_lower ( cur_object ):
